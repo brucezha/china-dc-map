@@ -27,7 +27,7 @@
   display:flex;align-items:center;padding:0 16px;gap:12px;flex-shrink:0;
   position:relative;z-index:1000;
   }
-  #brand{display:flex;align-items:center;gap:10px;flex-shrink:0}
+  #brand{display:flex;align-items:center;gap:10px;flex-shrink:0;cursor:pointer}
   #brand-logo{font-size:1.3em}
   #brand-name{font-size:.95em;font-weight:700;color:var(--text);letter-spacing:-.01em}
   #brand-name span{color:var(--accent)}
@@ -212,7 +212,7 @@
 
   /* ── SIDEBAR TOGGLE BUTTON (mobile only) ── */
   #sidebar-toggle{
-  display:none;position:fixed;bottom:22px;right:18px;z-index:1100;
+  display:none;position:fixed;bottom:22px;right:18px;z-index:3000;
   width:50px;height:50px;border-radius:50%;
   background:var(--accent);color:#0d1117;border:none;font-size:1.25em;
   cursor:pointer;box-shadow:0 4px 18px rgba(0,0,0,.55);
@@ -273,7 +273,17 @@
   .tab-btn{padding:12px 4px;font-size:.8em}
 
   /* Map badge repositioned above toggle */
-  #map-updated{bottom:82px;left:auto;right:10px}
+  #map-updated{
+    bottom:calc(120px + env(safe-area-inset-bottom));
+    left:auto;
+    right:calc(10px + env(safe-area-inset-right));
+  }
+
+  /* Keep hamburger clear of iOS Safari safe-area */
+  #sidebar-toggle{
+    bottom:calc(22px + env(safe-area-inset-bottom));
+    right:calc(18px + env(safe-area-inset-right));
+  }
 
   /* Leaflet zoom controls out of the way */
   .leaflet-top.leaflet-left{top:56px}
@@ -324,7 +334,7 @@
     </div>
 
     <div id="topbar-actions">
-      <button class="btn btn-ghost" onclick="openModal('subscribe-modal')">Get Updates</button>
+      <button class="btn btn-primary" onclick="openModal('subscribe-modal')">Get Updates</button>
     </div>
   </div><!-- MAIN APP -->
 
@@ -611,7 +621,7 @@
               </div>
 
               <div class="sl">
-                Provincial Regions
+                Province-Level Regions
               </div>
             </div>
           </div>
@@ -722,6 +732,10 @@
   L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',{
   attribution:'© OpenStreetMap © CARTO',maxZoom:19
   }).addTo(map);
+  // Click brand to reset the map view only.
+  const INITIAL_VIEW={center:[34,108],zoom:5};
+  const brandEl=document.getElementById('brand');
+  brandEl?.addEventListener('click',()=>{map.setView(INITIAL_VIEW.center,INITIAL_VIEW.zoom);});
 
   function mkIcon(d){
   const stageCol=stageColor(d.stage);
@@ -792,13 +806,12 @@
   const sleg=L.control({position:'bottomleft'});
   sleg.onAdd=()=>{
   const div=L.DomUtil.create('div','leaflet-control map-legend');
-  div.style.marginBottom='30px';
+  div.style.marginBottom=window.innerWidth<=640?'30px':'40px';
   div.innerHTML=`<span class="legend-title">Stage<\/span>
   <div><span class="legend-dot" style="background:#3fb950"><\/span>Operational<\/div>
   <div><span class="legend-dot" style="background:#f0883e"><\/span>Construction<\/div>
   <div><span class="legend-dot" style="background:#58a6ff"><\/span>Planned<\/div>
-  <div><span class="legend-dot" style="background:#8b949e"><\/span>Land Bank<\/div>
-  <div style="margin-top:5px">Has news update<\/div>`;
+  <div><span class="legend-dot" style="background:#8b949e"><\/span>Land Bank<\/div>`;
   return div;
   };
   sleg.addTo(map);
