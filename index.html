@@ -274,9 +274,9 @@
 
   /* Map badge repositioned above toggle */
   #map-updated{
-    bottom:calc(120px + env(safe-area-inset-bottom));
-    left:auto;
-    right:calc(10px + env(safe-area-inset-right));
+    bottom:calc(10px + env(safe-area-inset-bottom));
+    left:10px;
+    right:auto;
   }
 
   /* Keep hamburger clear of iOS Safari safe-area */
@@ -804,9 +804,45 @@
 
   // Stage legend
   const sleg=L.control({position:'bottomleft'});
+  let stageLegendDiv=null;
+  const mapUpdatedEl=document.getElementById('map-updated');
+  function positionMapUpdatedBelowStageLegend(){
+  if(window.innerWidth>640||!stageLegendDiv||!mapUpdatedEl) return;
+  const mapRect=map.getContainer().getBoundingClientRect();
+  const legendRect=stageLegendDiv.getBoundingClientRect();
+  const pillRect=mapUpdatedEl.getBoundingClientRect();
+  const gap=8; // visual gap between the two overlays
+  const legendBottomDistance=mapRect.bottom-legendRect.bottom;
+  let newBottom=legendBottomDistance-gap-pillRect.height;
+  if(newBottom<0) newBottom=0;
+  mapUpdatedEl.style.left='10px';
+  mapUpdatedEl.style.right='auto';
+  mapUpdatedEl.style.bottom=`${newBottom}px`;
+  }
+  function syncMobileLegendsWithSidebar(){
+  // Only applies to the iPhone/mobile bottom-sheet layout.
+  if(window.innerWidth>640||!stageLegendDiv||!mapUpdatedEl) return;
+  const sb=document.getElementById('sidebar');
+  const sidebarOpen=sb?.classList.contains('open');
+  const baseMarginBottom=30; // matches the initial mobile style
+  if(sidebarOpen&&sb){
+    const mapRect=map.getContainer().getBoundingClientRect();
+    const sbRect=sb.getBoundingClientRect();
+    const padding=12; // keep a small breathing room above the sidebar
+    const desiredLegendBottom=sbRect.top-padding;
+    let margin=mapRect.bottom-desiredLegendBottom;
+    if(!Number.isFinite(margin)) margin=baseMarginBottom;
+    stageLegendDiv.style.marginBottom=`${Math.max(margin,baseMarginBottom)}px`;
+  } else {
+    stageLegendDiv.style.marginBottom=`${baseMarginBottom}px`;
+  }
+  // Recompute the "Updated" pill after the margin change is applied.
+  requestAnimationFrame(()=>positionMapUpdatedBelowStageLegend());
+  }
   sleg.onAdd=()=>{
   const div=L.DomUtil.create('div','leaflet-control map-legend');
   div.style.marginBottom=window.innerWidth<=640?'30px':'40px';
+  stageLegendDiv=div;
   div.innerHTML=`<span class="legend-title">Stage<\/span>
   <div><span class="legend-dot" style="background:#3fb950"><\/span>Operational<\/div>
   <div><span class="legend-dot" style="background:#f0883e"><\/span>Construction<\/div>
@@ -815,6 +851,7 @@
   return div;
   };
   sleg.addTo(map);
+  positionMapUpdatedBelowStageLegend();
 
   // ── SIDEBAR LIST ──────────────────────────────────────────────────────────────
   const listEl=document.getElementById('list');
@@ -927,11 +964,21 @@
   const open=sb.classList.toggle('open');
   bd.classList.toggle('open',open);
   btn.textContent=open?'✕':'☰';
+  // Sidebar height/transform changes map layout; update Leaflet + overlay positions.
+  setTimeout(()=>{
+    map.invalidateSize();
+    syncMobileLegendsWithSidebar();
+  },350);
   }
   function closeSidebar(){
   document.getElementById('sidebar').classList.remove('open');
   document.getElementById('sidebar-backdrop').classList.remove('open');
   document.getElementById('sidebar-toggle').textContent='☰';
+  // Match map/legend overlay positions after the bottom-sheet transition.
+  setTimeout(()=>{
+    map.invalidateSize();
+    syncMobileLegendsWithSidebar();
+  },350);
   }
   // Close sidebar when a list item is tapped on mobile
   document.addEventListener('click',function(e){
