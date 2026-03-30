@@ -155,7 +155,7 @@
 
   /* ── MAP OVERLAY BADGE ── */
   #map-updated{
-  position:absolute;bottom:10px;left:10px;z-index:999;
+  position:absolute;bottom:10px;left:10px;z-index:2000;
   background:rgba(13,17,23,.85);border:1px solid var(--border);
   color:var(--text-muted);font-size:.7em;padding:4px 8px;border-radius:4px;
   backdrop-filter:blur(4px);
@@ -273,7 +273,7 @@
   .tab-btn{padding:12px 4px;font-size:.8em}
 
   /* Map badge repositioned above toggle */
-  #map-updated{bottom:82px;left:10px}
+  #map-updated{bottom:82px;left:auto;right:10px}
 
   /* Leaflet zoom controls out of the way */
   .leaflet-top.leaflet-left{top:56px}
@@ -298,7 +298,7 @@
 
   <div id="topbar">
     <div id="brand">
-      <span id="brand-logo">🏢</span> <span id="brand-name">China DC <span>Intelligence</span></span>
+      <span id="brand-name">China DC <span>Intelligence</span></span>
     </div>
 
     <div id="topbar-stats">
@@ -324,7 +324,7 @@
     </div>
 
     <div id="topbar-actions">
-      <button class="btn btn-ghost" onclick="openModal('subscribe-modal')">📩 Get Updates</button>
+      <button class="btn btn-ghost" onclick="openModal('subscribe-modal')">Get Updates</button>
     </div>
   </div><!-- MAIN APP -->
 
@@ -335,7 +335,7 @@
       <div id="sidebar-handle"></div>
 
       <div id="tabs">
-        <button class="tab-btn active" data-panel="sites">🗺 Sites</button> <button class="tab-btn" data-panel="news">📰 News</button> <button class="tab-btn" data-panel="about">ℹ About</button>
+        <button class="tab-btn active" data-panel="sites">Sites</button> <button class="tab-btn" data-panel="news">News</button> <button class="tab-btn" data-panel="about">About</button>
       </div><!-- SITES PANEL -->
 
       <div id="panel-sites">
@@ -516,7 +516,7 @@
 
       <div id="panel-news">
         <div id="news-header">
-          <h3>📰 Latest Updates</h3>
+          <h3>Latest Updates</h3>
 
           <p>News &amp; announcements tracked by our AI agent</p>
         </div>
@@ -542,7 +542,7 @@
 
           <div class="data-source-card">
             <div class="dsname">
-              🏢 Baxtel
+              Baxtel
             </div>
 
             <div class="dscount">
@@ -552,7 +552,7 @@
 
           <div class="data-source-card">
             <div class="dsname">
-              🌐 datacenters.com
+              datacenters.com
             </div>
 
             <div class="dscount">
@@ -562,7 +562,7 @@
 
           <div class="data-source-card">
             <div class="dsname">
-              📰 News Intelligence
+              News Intelligence
             </div>
 
             <div class="dscount">
@@ -644,7 +644,7 @@
 
     <div id="map">
       <div id="map-updated">
-        📅 Updated Mar 2026 · 843 sites
+        Updated Mar 2026 · 843 sites
       </div>
     </div>
   </div><!-- MOBILE SIDEBAR TOGGLE -->
@@ -655,7 +655,7 @@
     <div class="modal" style="position:relative">
       <button class="modal-close" onclick="closeModal('subscribe-modal')">✕</button>
 
-      <h2>📩 Stay Updated</h2>
+      <h2>Stay Updated</h2>
 
       <p>Get weekly briefings on new Chinese data center developments — new builds, expansions, acquisitions, and policy shifts. Free for early subscribers.</p><input type="email" id="sub-email" placeholder="your@email.com"> <button class="btn btn-primary" style="width:100%" onclick="handleSubscribe()">Subscribe for Free →</button>
 
@@ -731,7 +731,7 @@
       html:`<svg xmlns="http://www.w3.org/2000/svg" width="34" height="34">
         <circle cx="17" cy="17" r="16" fill="none" stroke="${stageCol}" stroke-width="1.5" opacity="0.4" class="pulse"/>
         <circle cx="17" cy="17" r="11" fill="${stageCol}" stroke="${stageCol}" stroke-width="2"/>
-        <text x="17" y="21" text-anchor="middle" font-size="9" fill="white" font-weight="bold">★<\/text>
+        
       <\/svg>`,
       className:'',iconSize:[34,34],iconAnchor:[17,17]
     });
@@ -750,12 +750,12 @@
   let newsHtml = '';
   const dNews = NEWS_BY_DC[d.name];
   if(dNews?.length){
-    newsHtml = `<div class="popup-news"><b style="font-size:.75em;color:var(--gold)">📰 Recent News<\/b>`
+    newsHtml = `<div class="popup-news"><b style="font-size:.75em;color:var(--gold)">Recent News<\/b>`
     + dNews.slice(0,2).map(n=>`<div class="popup-news-item">• ${n.headline}<\/div>`).join('')
     + `<\/div>`;
   }
-  const mwLine = d.mw ? `<span class="popup-tag">⚡ ${d.mw} MW<\/span>` : '';
-  const pueLine = d.pue ? `<span class="popup-tag">💚 PUE ${d.pue}<\/span>` : '';
+  const mwLine = d.mw ? `<span class="popup-tag">${d.mw} MW<\/span>` : '';
+  const pueLine = d.pue ? `<span class="popup-tag">PUE ${d.pue}<\/span>` : '';
   const srcMatch = d.popup.match(/href="([^"]+)"/);
   const srcUrl = srcMatch ? srcMatch[1] : '#';
   return `<div class="popup-name">${d.name}<\/div>
@@ -798,7 +798,7 @@
   <div><span class="legend-dot" style="background:#f0883e"><\/span>Construction<\/div>
   <div><span class="legend-dot" style="background:#58a6ff"><\/span>Planned<\/div>
   <div><span class="legend-dot" style="background:#8b949e"><\/span>Land Bank<\/div>
-  <div style="margin-top:5px"><svg width="14" height="14" style="vertical-align:middle;margin-right:3px"><circle cx="7" cy="7" r="6" fill="#555" stroke="#fff" stroke-width="1"/><text x="7" y="11" text-anchor="middle" font-size="7" fill="white">★<\/text><\/svg>Has news update<\/div>`;
+  <div style="margin-top:5px">Has news update<\/div>`;
   return div;
   };
   sleg.addTo(map);
@@ -818,7 +818,7 @@
   const newsItems=items.filter(d=>NEWS_BY_DC[d.name]);
   if(newsItems.length){
     newsBadge.style.display='';
-    newsBadge.textContent='★ '+newsItems.length+' with news';
+    newsBadge.textContent=newsItems.length+' with news';
   } else {
     newsBadge.style.display='none';
   }
@@ -829,7 +829,7 @@
     div.style.borderLeftColor=stageColor(d.stage);
     const hasNews=NEWS_BY_DC[d.name]?.length>0;
     div.innerHTML=`
-      <div class="dc-name">${d.name}${hasNews?'<span class="news-flag">★ NEWS<\/span>':''}<\/div>
+      <div class="dc-name">${d.name}${hasNews?'<span class="news-flag">NEWS<\/span>':''}<\/div>
       <div class="dc-sub">${[d.operator,d.city,d.province].filter(Boolean).join(' · ')}<\/div>
       <div class="dc-stage ${stageClass(d.stage)}">${stageLabel(d.stage)}${d.mw?' · '+d.mw+' MW':''}<\/div>`;
     div.addEventListener('click',()=>{
@@ -866,7 +866,7 @@
   applyFilters();
 
   // ── NEWS PANEL ────────────────────────────────────────────────────────────────
-  const typeLabels={new_build:'🏗 New Build',expansion:'📈 Expansion',acquisition:'🤝 Acquisition',policy:'🏛 Policy',announcement:'📢 Announcement'};
+  const typeLabels={new_build:'New Build',expansion:'Expansion',acquisition:'Acquisition',policy:'Policy',announcement:'Announcement'};
   const newsListEl=document.getElementById('news-list');
 
   NEWS.forEach(n=>{
@@ -879,8 +879,8 @@
     <\/div>
     <div class="news-headline">${n.headline}<\/div>
     <div class="news-summary">${n.summary}<\/div>
-    <div class="news-source">📰 ${n.source}<\/div>
-    ${n.lat?`<span class="news-location-btn">📍 Show on map<\/span>`:''}`;
+    <div class="news-source">${n.source}<\/div>
+    ${n.lat?`<span class="news-location-btn">Show on map<\/span>`:''}`;
 
   if(n.lat){
     div.querySelector('.news-location-btn').addEventListener('click',()=>{
@@ -937,7 +937,7 @@
   if(!email||!email.includes('@')){alert('Please enter a valid email address.');return;}
   // In production, POST to your backend/Mailchimp/Beehiiv API here
   document.getElementById('subscribe-modal').innerHTML=
-    `<div class="modal"><h2>✅ You're in!<\/h2><p style="font-size:.85em;color:var(--text-muted)">Thanks! We'll send you weekly China datacenter intelligence briefings. Check your inbox soon.<\/p><button class="btn btn-primary" style="width:100%;margin-top:12px" onclick="closeModal('subscribe-modal')">Done<\/button><\/div>`;
+    `<div class="modal"><h2>You're in!<\/h2><p style="font-size:.85em;color:var(--text-muted)">Thanks! We'll send you weekly China datacenter intelligence briefings. Check your inbox soon.<\/p><button class="btn btn-primary" style="width:100%;margin-top:12px" onclick="closeModal('subscribe-modal')">Done<\/button><\/div>`;
   }
   </script>
 </body>
